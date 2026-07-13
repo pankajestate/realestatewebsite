@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 
 // Create a local supabase client here to avoid relying on ../../lib/supabase
@@ -19,6 +20,8 @@ type Property = {
 type PropertyForm = Omit<Property, "id">;
 
 export default function Admin() {
+  const router = useRouter();
+  const [checking, setChecking] = useState(true);
   const [properties, setProperties] = useState<Property[]>([]);
   const [form, setForm] = useState<PropertyForm>({
     name: "",
@@ -37,7 +40,17 @@ export default function Admin() {
   useEffect(() => {
     fetchProperties();
   }, []);
-
+useEffect(() => {
+    async function checkUser() {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        router.push("/login");
+      } else {
+        setChecking(false);
+      }
+    }
+    checkUser();
+  }, []);
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const { error } = await supabase.from("properties").insert([form]);
@@ -56,7 +69,9 @@ export default function Admin() {
       fetchProperties();
     }
   }
-
+if (checking) {
+    return <p className="p-8">Loading...</p>;
+  }
   return (
     <main className="min-h-screen bg-gray-50 p-8">
       <h1 className="text-3xl font-bold mb-8 text-blue-900">Admin Panel</h1>
