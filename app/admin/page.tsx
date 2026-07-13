@@ -51,6 +51,10 @@ useEffect(() => {
     }
     checkUser();
   }, []);
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.push("/login");
+  }
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const { error } = await supabase.from("properties").insert([form]);
@@ -75,6 +79,12 @@ if (checking) {
   return (
     <main className="min-h-screen bg-gray-50 p-8">
       <h1 className="text-3xl font-bold mb-8 text-blue-900">Admin Panel</h1>
+      <button
+        onClick={handleLogout}
+        className="mb-6 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm"
+      >
+        Logout
+      </button>
 
       {/* Add Property Form */}
       <form
