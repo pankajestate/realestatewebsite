@@ -64,6 +64,7 @@ export default function PropertyDetails() {
   const [loading, setLoading] = useState(true);
   const [single, setSingle] = useState<Record<string, string>>(SINGLE_DEFAULTS);
   const [phones, setPhones] = useState<string[]>([]);
+  const [emails, setEmails] = useState<string[]>([]);
   const [socials, setSocials] = useState<{ platform: string; url: string }[]>([]);
 
   useEffect(() => {
@@ -94,16 +95,19 @@ export default function PropertyDetails() {
       const rows = (data as Setting[]) || [];
       const singleMap = { ...SINGLE_DEFAULTS };
       const phoneList: string[] = [];
+      const emailList: string[] = [];
       const socialList: { platform: string; url: string }[] = [];
 
       rows.forEach((row) => {
         if (row.key === "phone") phoneList.push(row.value);
+        else if (row.key === "email") emailList.push(row.value);
         else if (row.key === "social_link") socialList.push(parseSocial(row.value));
         else singleMap[row.key] = row.value;
       });
 
       setSingle(singleMap);
       setPhones(phoneList);
+      setEmails(emailList);
       setSocials(socialList);
     }
 
@@ -225,8 +229,12 @@ export default function PropertyDetails() {
         <div className="bg-blue-900 text-white rounded-lg p-6 text-center mb-10">
           <h3 className="text-xl font-semibold mb-2">{single.cta_heading}</h3>
           <p className="mb-4">{single.cta_subtext}</p>
+
           {phones.map((p, i) => (
             <p key={i}>📞 {p}</p>
+          ))}
+          {emails.map((e, i) => (
+            <p key={i}>✉️ {e}</p>
           ))}
 
           {socials.length > 0 && (
