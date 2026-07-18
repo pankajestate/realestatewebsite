@@ -32,15 +32,7 @@ const SINGLE_DEFAULTS: Record<string, string> = {
   footer_text: "© 2026 Pankaj Real Estate. All rights reserved.",
 };
 
-const SOCIAL_ICONS: Record<string, string> = {
-  Instagram: "📷",
-  Facebook: "📘",
-  WhatsApp: "💬",
-  Threads: "🧵",
-  LinkedIn: "💼",
-  YouTube: "▶️",
-  "Twitter (X)": "🐦",
-};
+
 
 function parseSocial(raw: string): { platform: string; url: string } {
   try {
@@ -178,17 +170,16 @@ export default function Home() {
           ))}
 
           {socials.length > 0 && (
-            <div className="flex justify-center gap-4 mt-6 mb-8">
+            <div className="flex flex-wrap justify-center gap-3 mt-6 mb-8">
               {socials.map((s, i) => (
                 <a
                   key={i}
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-2xl hover:opacity-70"
-                  title={s.platform}
+                  className="bg-white text-blue-900 px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-100"
                 >
-                  {SOCIAL_ICONS[s.platform] || "🔗"}
+                  {s.platform}
                 </a>
               ))}
             </div>
@@ -202,17 +193,16 @@ export default function Home() {
 
       <footer className="bg-gray-900 text-gray-400 text-center py-6 text-sm">
         {socials.length > 0 && (
-          <div className="flex justify-center gap-4 mb-3">
+          <div className="flex flex-wrap justify-center gap-3 mb-3">
             {socials.map((s, i) => (
               <a
                 key={i}
                 href={s.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xl hover:opacity-70"
-                title={s.platform}
+                className="text-gray-300 text-sm hover:text-white underline"
               >
-                {SOCIAL_ICONS[s.platform] || "🔗"}
+                {s.platform}
               </a>
             ))}
           </div>

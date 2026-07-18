@@ -32,15 +32,6 @@ const SECTION_OPTIONS = [
   { value: "social_link", label: "Social Media Link" },
 ];
 
-const SOCIAL_PLATFORMS = [
-  "Instagram",
-  "Facebook",
-  "WhatsApp",
-  "Threads",
-  "LinkedIn",
-  "YouTube",
-  "Twitter (X)",
-];
 
 function parseSocial(raw: string): { platform: string; url: string } {
   try {
@@ -58,7 +49,7 @@ export default function SiteSettings() {
 
   const [section, setSection] = useState(SECTION_OPTIONS[0].value);
   const [value, setValue] = useState("");
-  const [socialPlatform, setSocialPlatform] = useState(SOCIAL_PLATFORMS[0]);
+  const [socialPlatform, setSocialPlatform] = useState("");
   const [socialUrl, setSocialUrl] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -111,7 +102,7 @@ export default function SiteSettings() {
   function resetForm() {
     setSection(SECTION_OPTIONS[0].value);
     setValue("");
-    setSocialPlatform(SOCIAL_PLATFORMS[0]);
+    setSocialPlatform("");
     setSocialUrl("");
     setEditingId(null);
   }
@@ -120,7 +111,7 @@ export default function SiteSettings() {
     setSection(setting.key);
     if (setting.key === "social_link") {
       const parsed = parseSocial(setting.value);
-      setSocialPlatform(parsed.platform || SOCIAL_PLATFORMS[0]);
+      setSocialPlatform(parsed.platform || "");
       setSocialUrl(parsed.url);
     } else {
       setValue(setting.value);
@@ -198,18 +189,17 @@ export default function SiteSettings() {
 
         {section === "social_link" ? (
           <>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Platform</label>
-            <select
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Platform Name (koi bhi likh sakte ho)
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Instagram, Pinterest, Telegram..."
               value={socialPlatform}
               onChange={(e) => setSocialPlatform(e.target.value)}
               className="w-full border border-gray-400 p-2 rounded mb-3 text-gray-900"
-            >
-              {SOCIAL_PLATFORMS.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
+              required
+            />
 
             <label className="block text-sm font-medium text-gray-700 mb-1">Profile Link</label>
             <input
@@ -320,3 +310,4 @@ export default function SiteSettings() {
     </main>
   );
 }
+

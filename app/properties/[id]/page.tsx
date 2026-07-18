@@ -48,6 +48,15 @@ function parseMediaJSON(raw?: string | null): MediaItem[] {
   }
 }
 
+function parseSocial(raw: string): { platform: string; url: string } {
+  try {
+    const parsed = JSON.parse(raw);
+    return { platform: parsed.platform || "", url: parsed.url || "" };
+  } catch {
+    return { platform: "", url: "" };
+  }
+}
+
 export default function PropertyDetails() {
   const params = useParams();
   const [property, setProperty] = useState<Property | null>(null);
@@ -55,6 +64,7 @@ export default function PropertyDetails() {
   const [loading, setLoading] = useState(true);
   const [single, setSingle] = useState<Record<string, string>>(SINGLE_DEFAULTS);
   const [phones, setPhones] = useState<string[]>([]);
+  const [socials, setSocials] = useState<{ platform: string; url: string }[]>([]);
 
   useEffect(() => {
     async function fetchProperty() {
@@ -84,14 +94,17 @@ export default function PropertyDetails() {
       const rows = (data as Setting[]) || [];
       const singleMap = { ...SINGLE_DEFAULTS };
       const phoneList: string[] = [];
+      const socialList: { platform: string; url: string }[] = [];
 
       rows.forEach((row) => {
         if (row.key === "phone") phoneList.push(row.value);
+        else if (row.key === "social_link") socialList.push(parseSocial(row.value));
         else singleMap[row.key] = row.value;
       });
 
       setSingle(singleMap);
       setPhones(phoneList);
+      setSocials(socialList);
     }
 
     fetchProperty();
@@ -215,6 +228,22 @@ export default function PropertyDetails() {
           {phones.map((p, i) => (
             <p key={i}>📞 {p}</p>
           ))}
+
+          {socials.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-3 mt-4">
+              {socials.map((s, i) => (
+                <a
+                  key={i}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white text-blue-900 px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-100"
+                >
+                  {s.platform}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </main>
