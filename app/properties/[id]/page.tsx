@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
+import InquiryForm from "../../components/InquiryForm";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
@@ -25,6 +26,17 @@ interface Property {
   gallery_urls?: string | null;
 }
 
+interface Setting {
+  key: string;
+  value: string;
+}
+
+const SINGLE_DEFAULTS: Record<string, string> = {
+  site_name: "Pankaj Real Estate",
+  cta_heading: "Interested in this property?",
+  cta_subtext: "Hume contact karein aur visit book karein",
+};
+
 function parseMediaJSON(raw?: string | null): MediaItem[] {
   if (!raw) return [];
   try {
@@ -41,6 +53,8 @@ export default function PropertyDetails() {
   const [property, setProperty] = useState<Property | null>(null);
   const [activeMedia, setActiveMedia] = useState<{ url: string; caption: string; type: "image" | "video" } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [single, setSingle] = useState<Record<string, string>>(SINGLE_DEFAULTS);
+  const [phones, setPhones] = useState<string[]>([]);
 
   useEffect(() => {
     async function fetchProperty() {
@@ -59,7 +73,29 @@ export default function PropertyDetails() {
       }
       setLoading(false);
     }
+
+    async function fetchSettings() {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .order("key")
+        .order("sort_order");
+
+      const rows = (data as Setting[]) || [];
+      const singleMap = { ...SINGLE_DEFAULTS };
+      const phoneList: string[] = [];
+
+      rows.forEach((row) => {
+        if (row.key === "phone") phoneList.push(row.value);
+        else singleMap[row.key] = row.value;
+      });
+
+      setSingle(singleMap);
+      setPhones(phoneList);
+    }
+
     fetchProperty();
+    fetchSettings();
   }, [params.id]);
 
   if (loading) {
@@ -86,8 +122,8 @@ export default function PropertyDetails() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <nav className="bg-blue-900 text-white px-8 py-4 flex justify-between items-center">
-        <a href="/" className="text-xl font-bold">Pankaj Real Estate</a>
+      <nav className="bg-blue-900 text-white px-8 py-4 flex justify-between items-center sticky top-0 z-50 shadow-md">
+        <a href="/" className="text-xl font-bold">{single.site_name}</a>
         <a href="/" className="hover:text-blue-300">← Back to Home</a>
       </nav>
 
@@ -167,11 +203,18 @@ export default function PropertyDetails() {
           )}
         </div>
 
+        {/* Inquiry Form */}
+        <div className="mb-10">
+          <InquiryForm propertyName={property.name} />
+        </div>
+
         {/* Contact CTA */}
         <div className="bg-blue-900 text-white rounded-lg p-6 text-center mb-10">
-          <h3 className="text-xl font-semibold mb-2">Interested in this property?</h3>
-          <p className="mb-4">Hume contact karein aur visit book karein</p>
-          <p>📞 +91 98765 43210</p>
+          <h3 className="text-xl font-semibold mb-2">{single.cta_heading}</h3>
+          <p className="mb-4">{single.cta_subtext}</p>
+          {phones.map((p, i) => (
+            <p key={i}>📞 {p}</p>
+          ))}
         </div>
       </div>
     </main>

@@ -66,16 +66,14 @@ export default function Admin() {
   });
 
   const [existingGallery, setExistingGallery] = useState<ExistingMediaItem[]>([]);
-  const [newGalleryItems, setNewGalleryItems] = useState<{
-    file: File | null;
-    caption: string;
-  }[]>([]);
+  const [newGalleryItems, setNewGalleryItems] = useState<
+    { file: File | null; caption: string }[]
+  >([]);
 
   const [existingVideos, setExistingVideos] = useState<ExistingMediaItem[]>([]);
-  const [newVideoItems, setNewVideoItems] = useState<{
-    file: File | null;
-    caption: string;
-  }[]>([]);
+  const [newVideoItems, setNewVideoItems] = useState<
+    { file: File | null; caption: string }[]
+  >([]);
 
   async function fetchProperties() {
     const { data } = await supabase.from("properties").select("*").order("id");
@@ -113,7 +111,6 @@ export default function Admin() {
     return data.publicUrl;
   }
 
-  // Existing gallery - caption editable + file replaceable
   function updateExistingGalleryCaption(index: number, caption: string) {
     const updated = [...existingGallery];
     updated[index] = { ...updated[index], caption };
@@ -128,7 +125,6 @@ export default function Admin() {
     setExistingGallery(existingGallery.filter((_, i) => i !== index));
   }
 
-  // New gallery rows
   function addGalleryRow() {
     setNewGalleryItems([...newGalleryItems, { file: null, caption: "" }]);
   }
@@ -141,7 +137,6 @@ export default function Admin() {
     setNewGalleryItems(newGalleryItems.filter((_, i) => i !== index));
   }
 
-  // Existing videos - caption editable + file replaceable
   function updateExistingVideoCaption(index: number, caption: string) {
     const updated = [...existingVideos];
     updated[index] = { ...updated[index], caption };
@@ -156,7 +151,6 @@ export default function Admin() {
     setExistingVideos(existingVideos.filter((_, i) => i !== index));
   }
 
-  // New video rows
   function addVideoRow() {
     setNewVideoItems([...newVideoItems, { file: null, caption: "" }]);
   }
@@ -179,7 +173,6 @@ export default function Admin() {
         imageUrl = await uploadFile(coverFile);
       }
 
-      // Process existing gallery - replace file if a new one was selected
       const processedExistingGallery: MediaItem[] = [];
       for (const item of existingGallery) {
         if (item.replaceFile) {
@@ -199,7 +192,6 @@ export default function Admin() {
       }
       const finalGallery = [...processedExistingGallery, ...uploadedGallery];
 
-      // Process existing videos - replace file if a new one was selected
       const processedExistingVideos: MediaItem[] = [];
       for (const item of existingVideos) {
         if (item.replaceFile) {
@@ -307,6 +299,18 @@ export default function Admin() {
         Logout
       </button>
 
+      <div className="flex gap-4 mb-6">
+        <a href="/admin/forms" className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 text-sm">
+          📝 Form Builder
+        </a>
+        <a href="/admin/inquiries" className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 text-sm">
+          📨 View Inquiries
+        </a>
+        <a href="/admin/settings" className="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800 text-sm">
+          ✏️ Edit Website Text
+        </a>
+      </div>
+
       <form
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded-lg shadow-md mb-10 max-w-2xl"
@@ -368,7 +372,6 @@ export default function Admin() {
           className="w-full border border-gray-400 p-2 rounded mb-5 text-gray-900"
         />
 
-        {/* Gallery Section */}
         <div className="border-t pt-4 mb-5">
           <h3 className="font-semibold mb-3">Gallery Photos (caption ke saath)</h3>
 
@@ -438,7 +441,6 @@ export default function Admin() {
           </button>
         </div>
 
-        {/* Video Section */}
         <div className="border-t pt-4 mb-5">
           <h3 className="font-semibold mb-3">Videos (caption ke saath)</h3>
 
